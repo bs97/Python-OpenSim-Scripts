@@ -12,8 +12,8 @@ def create_states_file_from_coordinates_file(analyze_settings_template_file, mod
     analyze_tool.setModelFilename(model_file)
     analyze_tool.setResultsDir(results_path)
     analyze_tool.setCoordinatesFileName(coord_file)
-    analyze_tool.setInitialTime(start_time)
-    analyze_tool.setFinalTime(end_time)
+    # analyze_tool.setInitialTime(start_time)
+    # analyze_tool.setFinalTime(end_time)
     analyze_tool.setName("OMC")
     analyze_tool.run()
 
@@ -38,7 +38,9 @@ def get_body_quats_from_states(states_file, model_file, results_path):
     radius = model.getBodySet().get('radius_r')
 
     # Unlock any locked coordinates in model
-    for coord in ['TH_x','TH_y','TH_z','TH_x_trans','TH_y_trans','TH_z_trans',
+    # for coord in ['TH_x','TH_y','TH_z','TH_x_trans','TH_y_trans','TH_z_trans',
+    #               'SC_x','SC_y','SC_z','AC_x','AC_y','AC_z','GH_y','GH_z','GH_yy','EL_x','PS_y']:
+    for coord in ['TH_x','TH_y','TH_z','TH_transx','TH_transy','TH_transz',
                   'SC_x','SC_y','SC_z','AC_x','AC_y','AC_z','GH_y','GH_z','GH_yy','EL_x','PS_y']:
         model.getCoordinateSet().get(coord).set_locked(False)
 
