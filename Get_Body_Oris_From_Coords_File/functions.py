@@ -145,5 +145,6 @@ def get_JA_euls_from_quats(body1_quats, body2_quats, eul_seq):
         joint_eul = joint_scipyR.as_euler(eul_seq, degrees=True)    # Get euler angles
         eul_1_arr[row], eul_2_arr[row], eul_3_arr[row] = joint_eul[0], joint_eul[1], joint_eul[2]
 
+
     return eul_1_arr, eul_2_arr, eul_3_arr
 

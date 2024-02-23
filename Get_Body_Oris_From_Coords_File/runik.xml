@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <OpenSimDocument Version="40000">
   <IKTool name="Inverse Kinematics Tool">
-    <coordinate_file>C:\Users\bradl\Documents\GitHub\Python-OpenSim-Scripts\Get_Body_Oris_From_Coords_File\1sabdfrontkinect.trc</coordinate_file>
+<!--    <coordinate_file>C:\Users\bradl\Documents\GitHub\Python-OpenSim-Scripts\Get_Body_Oris_From_Coords_File\1sabdfrontkinect.trc</coordinate_file>-->
     <report_errors>true</report_errors>
     <marker_file>C:\path\to\marker_file.trc</marker_file>
     <solve_for_equilibrium_for_auxiliary_coordinates>false</solve_for_equilibrium_for_auxiliary_coordinates>
