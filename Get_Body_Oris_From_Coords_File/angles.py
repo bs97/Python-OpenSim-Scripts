@@ -57,5 +57,5 @@ def getAngles(trc_filename):
 
     plt.show()
 
-    return new_filename
+    return new_filename, shoulder_chest_angles
 

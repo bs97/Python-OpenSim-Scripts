@@ -29,7 +29,7 @@ def apply_transformations_sag(marker_data):
 from scipy.signal import butter, lfilter, resample
 
 
-def butter_lowpass_filter(data, cutoff, fs, order=2):
+def butter_lowpass_filter(data, cutoff, fs, order=4):
     nyq = 0.5 * fs
     normal_cutoff = cutoff / nyq
     b, a = butter(order, normal_cutoff, btype='low', analog=False)
@@ -102,7 +102,7 @@ def generate_coord_file_from_trc(trc_file, model_file, coord_file, settings_file
 
     if not mm:
         # Set the filter cutoff frequency and sampling frequency
-        cutoff_freq = 2  # Adjust this value according to your requirements
+        cutoff_freq = 10  # Adjust this value according to your requirements
         sampling_freq = 30  # Adjust based on your original sampling frequency
 
         # Pad the data with initial values
@@ -128,8 +128,12 @@ def generate_coord_file_from_trc(trc_file, model_file, coord_file, settings_file
         data = transformed_marker_data[:, 2:]
 
         # Define original and target sampling rates
-        original_sampling_rate = 30  # Hz
-        target_sampling_rate = 120  # Hz
+        original_sampling_rate = 29.68  # Hz
+        # target_sampling_rate = 125.16  # Hz
+        # target_sampling_rate = 129.32
+        target_sampling_rate = 120
+
+
 
         # Calculate new timestamps based on the target sampling rate
         original_duration = timestamps[-1] - timestamps[0]
