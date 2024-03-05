@@ -5,6 +5,8 @@ from scipy.spatial.transform import Rotation as R
 import tempfile
 import shutil
 from scipy.interpolate import interp1d
+import sys
+import re
 
 def apply_transformations_sag(marker_data):
     # this calculates sagittal plane rotations
@@ -29,7 +31,7 @@ def apply_transformations_sag(marker_data):
 from scipy.signal import butter, lfilter, resample
 
 
-def butter_lowpass_filter(data, cutoff, fs, order=4):
+def butter_lowpass_filter(data, cutoff, fs, order=2):
     nyq = 0.5 * fs
     normal_cutoff = cutoff / nyq
     b, a = butter(order, normal_cutoff, btype='low', analog=False)
@@ -79,6 +81,24 @@ def generate_coord_file_from_trc(trc_file, model_file, coord_file, settings_file
     # Read marker data from TRC file
     marker_data = np.loadtxt(trc_file, skiprows=5)  # Adjust skiprows based on TRC file format
     mm = False
+    original_sampling_rate = 0
+    # make sure sampling interval is set to 8.33333 in mm report for 120 hz
+    target_sampling_rate = 120
+
+    # Get marker names and original header from the original TRC file
+    with open(trc_file, "r") as trc:
+        header_lines = trc.readlines()[:5]  # Assuming the header is contained in the first 10 lines
+        if not mm:
+            print(header_lines)
+            print(repr(header_lines[2]))
+
+            # Split the string by tab characters (\t)
+            parts = header_lines[2].split('\t')
+
+            print("parts are")
+            print(parts)
+            print("end parts")
+            original_sampling_rate = float(parts[0])
 
     # Apply transformations
     print(f"trc file is {trc_file}")
@@ -102,7 +122,7 @@ def generate_coord_file_from_trc(trc_file, model_file, coord_file, settings_file
 
     if not mm:
         # Set the filter cutoff frequency and sampling frequency
-        cutoff_freq = 10  # Adjust this value according to your requirements
+        cutoff_freq = 5  # Adjust this value according to your requirements
         sampling_freq = 30  # Adjust based on your original sampling frequency
 
         # Pad the data with initial values
@@ -128,10 +148,10 @@ def generate_coord_file_from_trc(trc_file, model_file, coord_file, settings_file
         data = transformed_marker_data[:, 2:]
 
         # Define original and target sampling rates
-        original_sampling_rate = 29.68  # Hz
+        # original_sampling_rate = 29.68  # Hz
         # target_sampling_rate = 125.16  # Hz
         # target_sampling_rate = 129.32
-        target_sampling_rate = 120
+
 
 
 
@@ -163,20 +183,47 @@ def generate_coord_file_from_trc(trc_file, model_file, coord_file, settings_file
     # Get marker names and original header from the original TRC file
     with open(trc_file, "r") as trc:
         header_lines = trc.readlines()[:5]  # Assuming the header is contained in the first 10 lines
-    if mm == False:
-        transformed_marker_data[:, 1] /= 1000  # Convert milliseconds to seconds for the second column
-        # transformed_marker_data[:, 1] /= 1000000 # Convert microseconds to seconds for the second column
-        print("k")
-    # Write header with original header to the temporary TRC file
-    with open(temp_file_path, "w") as temp_file:
-        temp_file.writelines(header_lines)
-        # np.savetxt(temp_file, transformed_marker_data, delimiter="\t", fmt="%.6f")
-        # save first two columns (frame and time) as integers as this is required by osim gui for IK
-        np.savetxt(temp_file, transformed_marker_data, delimiter="\t",
-                   fmt=["%d", "%d"] + ["%.6f"] * (transformed_marker_data.shape[1] - 2))
+
+
+    if not mm:
+        print(header_lines)
+        print(repr(header_lines[2]))
+
+        # Split the string by tab characters (\t)
+        parts = header_lines[2].split('\t')
+
+        print("parts are")
+        print(parts)
+        print("end parts")
+
+        parts[0] = str(target_sampling_rate)
+        parts[1] = str(target_sampling_rate)
+        parts[5] = str(target_sampling_rate)
+
+        # Replace the third part with a new value
+        if len(parts) > 2:
+            parts[2] = str(upsampled_data.shape[0])
+
+        # Join the parts back together with tab characters (\t)
+        header_lines[2] = '\t'.join(parts)
+
+        print(repr(header_lines[2]))
+        print(upsampled_data.shape[0])
+
+        # sys.exit()
 
     if mm == False:
-        trc_file_new = trc_file[:-4] + "_withcut&rot.trc"
+        # transformed_marker_data[:, 1] /= 1000000 # Convert microseconds to seconds for the second column
+        transformed_marker_data[:, 1] = transformed_marker_data[:, 1].astype(
+            float) / 1000000  # Convert microseconds to seconds
+
+    with open(temp_file_path, "w") as temp_file:
+        temp_file.writelines(header_lines)
+        np.savetxt(temp_file, transformed_marker_data, delimiter="\t",
+                   fmt=["%d", "%.6f"] + ["%.6f"] * (transformed_marker_data.shape[1] - 2))
+
+    if mm == False:
+        trc_file_new = trc_file[:-4] + "_rot.trc"
 
         # Copy temp_file to trc_file_new
         shutil.copyfile(temp_file_path, trc_file_new)
@@ -191,6 +238,47 @@ def generate_coord_file_from_trc(trc_file, model_file, coord_file, settings_file
     ik_tool.run()
 
 
+def copyMot(cut_trc):
+
+
+    # Split the path by '/'
+    path_parts = cut_trc.split('/')
+
+    # Take the last part of the path
+    last_part = path_parts[-1]
+
+    # Split the last part by '.'
+    filename_parts = last_part.split('.')
+
+    # Extract the desired part
+    desired_part = filename_parts[0]
+
+    # copy mot file for elbow angles processing
+    print("desired_part is")
+    print(desired_part)
+
+
+    # Source file name
+    source_file = "OMC_IK_results.mot"
+
+    # Get the directory of the source file
+    source_dir = os.path.dirname(cut_trc)
+
+    # Destination directory
+    destination_dir = os.path.join(source_dir, "mots")
+
+    # Create destination directory if it doesn't exist
+    os.makedirs(destination_dir, exist_ok=True)
+
+    # Destination file name
+    destination_file = os.path.join(destination_dir, desired_part + ".mot")
+
+    # Copy the file
+    shutil.copy(source_file, destination_file)
+
+    print(f"File copied from '{source_file}' to '{destination_file}'.")
+
+
 def runIk(cut_trc):
     # Now, call the function to generate the coord_file
     template_trc_file = cut_trc  # Update this with your template TRC file path
@@ -199,6 +287,10 @@ def runIk(cut_trc):
     settings_file = "runik.xml"  # Update this with your settings file path
 
     generate_coord_file_from_trc(template_trc_file, model_file, coord_file, settings_file)
+
+    # copy generated mot file for elbow angles
+    copyMot(cut_trc)
+
 
     return True
 
