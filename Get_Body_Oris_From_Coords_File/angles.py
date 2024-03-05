@@ -37,6 +37,26 @@ def getElbowangles(trc_filename):
 
     print(f"elbow file is {destination_file}")
 
+    # Assuming destination_file contains the path to the file
+    data = np.loadtxt(destination_file, delimiter='\t', skiprows=11)
+
+    # Now, 'data' contains the content of the file as a NumPy array
+    print(data.shape)
+    time = data[:, 0]
+    el_x = data[:, 16]
+    ps_y = data[:, 17]
+
+    print(el_x)
+    print(el_x.shape)
+
+    # Combine el_x and ps_y to create angles of shape (2228, 2)
+    angles = np.concatenate((el_x[:, np.newaxis], ps_y[:, np.newaxis]), axis=1)
+
+    # Add an additional column of zeros to create angles of shape (2228, 3)
+    angles = np.concatenate((angles, np.zeros((angles.shape[0], 1))), axis=1)
+
+    return angles
+
 
 
 def getAngles(trc_filename):
@@ -64,8 +84,7 @@ def getAngles(trc_filename):
     print("angles shape is (3009, 3)")
 
     elbow_angles = getElbowangles(trc_filename)
-    print("ENDconda ")
-    sys.exit()
+
     # elbow_angles = R_elbow_shoulder.as_euler('XYZ', degrees=True)
 
 
