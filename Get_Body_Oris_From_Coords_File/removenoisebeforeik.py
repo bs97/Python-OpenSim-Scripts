@@ -38,7 +38,7 @@ def removeNoise(original_trc):
 
     plt.xlabel('X Values')
     plt.ylabel('Y Values')
-    plt.title('Plot of the 54th column of marker_data')
+    plt.title('Click start and end points to remove noise')
     plt.grid(True)
     plt.show()
 

@@ -10,6 +10,103 @@ from scipy.spatial.distance import euclidean
 from fastdtw import fastdtw
 
 import shutil
+
+
+def plotSyncedAngles(time_mm,time_kinect,shoulder_chest_angles_mm_shifted,shoulder_chest_angles_kinect_shifted,elbow_angles_mm_shifted,elbow_angles_kinect_shifted):
+    # Plot the YZY Euler sequence angles for the shoulder relative to the chest
+    # dont plot srot angles and elbow rot,carry due to errors:
+
+    plt.plot(time_mm, shoulder_chest_angles_mm_shifted[:, 0], label='plane of elevation mm')
+    plt.plot(time_kinect, shoulder_chest_angles_kinect_shifted[:, 0], label='plane of elevation kinect')
+    plt.xlabel('Frame')
+    plt.ylabel('Angle (degrees)')
+    plt.title('YZY Euler Sequence Angles for shoulder angles (humerus Relative to thorax)')
+    plt.legend()
+
+    # Construct new filename
+    new_filename = f"shoulder_plane_of_elevation.png"
+    # Create the 'charts' directory if it doesn't exist
+    os.makedirs("charts", exist_ok=True)
+    # Saving plot in /charts directory with new filename
+    plt.savefig(f"charts/{new_filename}")
+
+    plt.show()
+    plt.close()
+
+    plt.plot(time_mm, shoulder_chest_angles_mm_shifted[:, 1], label='angle of elevation mm')
+    plt.plot(time_kinect, shoulder_chest_angles_kinect_shifted[:, 1], label='angle of elevation kinect')
+    plt.xlabel('Frame')
+    plt.ylabel('Angle (degrees)')
+    plt.title('YZY Euler Sequence Angles for shoulder angles (humerus Relative to thorax)')
+    plt.legend()
+
+    # Construct new filename
+    new_filename = f"shoulder_angleofelevation.png"
+    # Create the 'charts' directory if it doesn't exist
+    os.makedirs("charts", exist_ok=True)
+    # Saving plot in /charts directory with new filename
+    plt.savefig(f"charts/{new_filename}")
+
+    plt.show()
+    plt.close()
+
+    plt.plot(time_mm, shoulder_chest_angles_mm_shifted[:, 2], label='rotation mm')
+    plt.plot(time_kinect, shoulder_chest_angles_kinect_shifted[:, 2], label='rotation kinect')
+    plt.xlabel('Frame')
+    plt.ylabel('Angle (degrees)')
+    plt.title('YZY Euler Sequence Angles for shoulder angles (humerus Relative to thorax)')
+    plt.legend()
+
+    # Construct new filename
+    new_filename = f"shoulder_rotation.png"
+    # Create the 'charts' directory if it doesn't exist
+    os.makedirs("charts", exist_ok=True)
+    # Saving plot in /charts directory with new filename
+    plt.savefig(f"charts/{new_filename}")
+
+    plt.show()
+    plt.close()
+
+    # Plot the YZY Euler sequence angles for the shoulder relative to the chest
+    # dont plot srot angles and elbow rot,carry due to errors:
+
+    # if plotangle < 2:
+    plt.plot(time_mm, elbow_angles_mm_shifted[:, 0], label='elbow flexion mm')
+    plt.plot(time_kinect, elbow_angles_kinect_shifted[:, 0], label='elbow flexion kinect')
+    plt.xlabel('Frame')
+    plt.ylabel('Angle (degrees)')
+    plt.title('XYZ Euler Sequence Angles for elbow angles')
+    plt.legend()
+
+
+    # Construct new filename
+    new_filename = f"elbow_flexion.png"
+    # Create the 'charts' directory if it doesn't exist
+    os.makedirs("charts", exist_ok=True)
+    # Saving plot in /charts directory with new filename
+    plt.savefig(f"charts/{new_filename}")
+    plt.show()
+    plt.close()
+
+
+    plt.plot(time_mm, elbow_angles_mm_shifted[:, 1], label='supination pronation mm')
+    plt.plot(time_kinect, elbow_angles_kinect_shifted[:, 1], label='supination pronation kinect')
+    plt.xlabel('Frame')
+    plt.ylabel('Angle (degrees)')
+    plt.title('XYZ Euler Sequence Angles for elbow angles')
+    plt.legend()
+
+    # Construct new filename
+    new_filename = f"elbow_sup_pro.png"
+    # Create the 'charts' directory if it doesn't exist
+    os.makedirs("charts", exist_ok=True)
+    # Saving plot in /charts directory with new filename
+    plt.savefig(f"charts/{new_filename}")
+
+    plt.show()
+    plt.close()
+
+
 def collect():
     root = tk.Tk()
     root.withdraw()  # Hide the main tkinter window
@@ -43,8 +140,10 @@ def main():
     shoulder_chest_angles_kinect, elbow_angles_kinect = collect()
     shoulder_chest_angles_mm, elbow_angles_mm = collect()
 
-    mmstartcut = 500
-    mmendcut = -500
+    # mmstartcut = 500
+    # mmendcut = -500
+    mmstartcut = 1
+    mmendcut = -1
     shoulder_chest_angles_mm = shoulder_chest_angles_mm[mmstartcut:mmendcut]
     elbow_angles_mm = elbow_angles_mm[mmstartcut:mmendcut]
 
@@ -85,34 +184,8 @@ def main():
 
     print("angles after array cut (same size)")
 
-    for plotangle in range(3):
-        # Plot the YZY Euler sequence angles for the shoulder relative to the chest
-        # dont plot srot angles and elbow rot,carry due to errors:
 
-        # if plotangle < 2:
-        print(f"plot angle is{plotangle}")
-        plt.plot(time_mm, shoulder_chest_angles_mm_shifted[:, plotangle], label='shoulder mm')
-        plt.plot(time_kinect, shoulder_chest_angles_kinect_shifted[:, plotangle], label='shoulder kinect')
-        plt.xlabel('Frame')
-        plt.ylabel('Angle (degrees)')
-        plt.title('YZY Euler Sequence Angles for shoulder angles (humerus Relative to Chest)')
-        plt.legend()
-        plt.show()
-
-
-    for plotangle in range(2):
-        # Plot the YZY Euler sequence angles for the shoulder relative to the chest
-        # dont plot srot angles and elbow rot,carry due to errors:
-
-        # if plotangle < 2:
-        plt.plot(time_mm, elbow_angles_mm_shifted[:, plotangle], label='elbow angles mm')
-        plt.plot(time_kinect, elbow_angles_kinect_shifted[:, plotangle], label='elbow angles kinect')
-        plt.xlabel('Frame')
-        plt.ylabel('Angle (degrees)')
-        plt.title('YZY Euler Sequence Angles for elbow angles (radius Relative to humerous)')
-        plt.legend()
-        plt.show()
-
+    plotSyncedAngles(time_mm,time_kinect,shoulder_chest_angles_mm_shifted,shoulder_chest_angles_kinect_shifted,elbow_angles_mm_shifted,elbow_angles_kinect_shifted)
 
 
 

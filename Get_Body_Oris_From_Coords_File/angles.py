@@ -100,33 +100,45 @@ def getAngles(trc_filename):
     plt.plot(time, shoulder_chest_angles[:, 0], label='Plane of Elevation')
     plt.plot(time, shoulder_chest_angles[:, 1], label='Angle of Elevation')
     # plt.plot(time, shoulder_chest_angles[:, 2], label='Rotation')
-    plt.xlabel('Time')
+    plt.xlabel('Frame')
     plt.ylabel('Angle (degrees)')
     variable_name = "shoulder angles (humerus Relative to Chest)"
-    plt.title('YZY Euler Sequence Angles for ' + filename_without_extension)
+    plt.title(' YZY Euler Sequence Angles for Shoulder ' + filename_without_extension)
     plt.legend()
+
+
+    # # Construct new filename
+    # new_filename = f"{filename_without_extension}_yzy.png"
+    #
+    # # Create the 'charts' directory if it doesn't exist
+    # os.makedirs("charts", exist_ok=True)
+    #
+    # # Saving plot in /charts directory with new filename
+    # plt.savefig(f"charts/{new_filename}")
     plt.show()
     plt.close()
     plt.plot(time_elbow, elbow_angles[:, 0], label='elbow flexion')
-    plt.plot(time, elbow_angles[:, 1], label='supination pronation')
+    plt.plot(time_elbow, elbow_angles[:, 1], label='supination pronation')
     # plt.plot(time, elbow_angles[:, 2], label='carrying angle')
-    plt.xlabel('Time')
+    plt.xlabel('Frame')
     plt.ylabel('Angle (degrees)')
     plt.title('XYZ Euler Sequence Angles for elbow angles (humerous Relative to radius)')
     plt.legend()
-    plt.show()
+
+
+    # # Construct new filename
+    # new_filename = f"{filename_without_extension}_xyz.png"
+    #
+    # # Create the 'charts' directory if it doesn't exist
+    # os.makedirs("charts", exist_ok=True)
+    #
+    # # Saving plot in /charts directory with new filename
+    # plt.savefig(f"charts/{new_filename}")
     plt.close()
+    plt.show()
 
 
-    # Construct new filename
-    new_filename = f"{filename_without_extension}_yzy.png"
-
-    # Create the 'charts' directory if it doesn't exist
-    os.makedirs("charts", exist_ok=True)
-
-    # Saving plot in /charts directory with new filename
-    plt.savefig(f"charts/{new_filename}")
-
+    new_filename = "test"
 
     return new_filename, shoulder_chest_angles, elbow_angles
 
